@@ -1,0 +1,108 @@
+inverse<-function(matrix){
+
+
+if (nrow(matrix)==2){
+
+inverse_m<-matrix(1:4,2)
+
+det_m<-(matrix[1,1]*matrix[2,2])-(matrix[1,2]*matrix[2,1])
+
+inverse_m[1,1]<-matrix[2,2]*(1/det_m)
+inverse_m[1,2]<-matrix[2,1]*(-1)*(1/det_m)
+inverse_m[2,1]<-matrix[1,2]*(-1)*(1/det_m)
+inverse_m[2,2]<-matrix[1,1]*(1/det_m)
+
+  }
+   
+else{
+  
+  #construct identity_m
+  identity_m<-matrix(0, nrow(matrix), ncol(matrix))
+  working_m<-matrix
+  
+  
+  for (i in 1:nrow(matrix)){
+    
+    identity_m[i,i]<-1
+  }
+  
+  adj_m<-identity_m
+  
+  if(identical(identity_m, working_m)==TRUE){
+    
+    inverse_m<-identity_m
+  }
+
+  
+  else{
+  while(identical(identity_m, working_m)==FALSE){
+    
+    
+    for (n in 1:nrow(matrix)){
+
+      
+      if (working_m[n,n]!=1){
+        
+        change_vect_work<-mapply(prod, working_m[n,], 1/(working_m[n,n]))
+        change_vect_adj<-mapply(prod, adj_m[n,], 1/(working_m[n,n]))
+        working_m[n,]<-change_vect_work
+        adj_m[n,]<-change_vect_adj
+      }
+        
+
+      
+      for (p in n+1:(nrow(matrix))){
+
+        
+        if (n!=p && p<=nrow(matrix)){
+
+          if (working_m[p,n]!=0){
+
+  
+          factor_work<- -(working_m[n,]*working_m[p,n])
+
+          
+          factor_adj<- -(adj_m[n,]*working_m[p,n])
+
+          
+            c_vect_work<-mapply(sum, working_m[p,], factor_work)
+            c_vect_adj<-mapply(sum, adj_m[p,], factor_adj)
+            working_m[p,]<-c_vect_work
+            adj_m[p,]<-c_vect_adj
+          }
+        }
+      }
+    }     
+
+  
+    for (m in nrow(matrix):1){
+      for(q in (nrow(matrix)-1):1){
+        
+        if(m!=q && q>=1){
+          
+          #check if entry is 0
+          if(working_m[q,m]!=0){
+            
+          factor_work<- -(working_m[m,]*working_m[q,m])
+          factor_adj<- -(adj_m[m,]*working_m[q,m])
+          
+          c_vect_work<-mapply(sum, working_m[q,], factor_work)
+          c_vect_adj<-mapply(sum, adj_m[q,], factor_adj)
+          working_m[q,]<-c_vect_work
+          adj_m[q,]<-c_vect_adj
+          
+              }      
+            }
+          }
+
+        }
+  
+      }
+  
+  inverse_m<-adj_m
+    }
+  }
+  
+inverse_m
+  
+}
